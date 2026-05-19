@@ -32,12 +32,25 @@ export default function AdminPage() {
     setTimeout(() => setMessage(''), 3000);
   };
 
-  const handleLogin = () => {
-    if (password === (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123')) {
+  const handleLogin = async () => {
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'authenticate', password }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        success?: boolean;
+        error?: string;
+      };
+      if (!res.ok || !data.success) {
+        showMessage(data.error || 'Yanlış şifre veya sunucu hatası.', 'error');
+        return;
+      }
       setAuthenticated(true);
-      fetchData();
-    } else {
-      showMessage('Yanlış şifre!', 'error');
+      await fetchData();
+    } catch {
+      showMessage('Sunucuya ulaşılamadı.', 'error');
     }
   };
 
@@ -58,13 +71,22 @@ export default function AdminPage() {
     if (!confirm('Tüm skorları silmek istediğinize emin misiniz?')) return;
 
     try {
-      await fetch('/api/admin', {
+      const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'reset_scores', password: password }),
       });
+      const data = (await res.json().catch(() => ({}))) as {
+        success?: boolean;
+        message?: string;
+        error?: string;
+      };
+      if (!res.ok) {
+        showMessage(data.error || 'Skor sıfırlama başarısız (şifreyi kontrol edin).', 'error');
+        return;
+      }
       await fetchData();
-      showMessage('Skorlar sıfırlandı!');
+      showMessage(data.message || 'Skorlar sıfırlandı!');
     } catch {
       showMessage('İşlem başarısız', 'error');
     }

@@ -62,6 +62,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 401 });
     }
 
+    /** Sadece panel girişi; şifreyi sunucu (`ADMIN_PASSWORD`) ile doğrular. */
+    if (body.action === 'authenticate') {
+      return NextResponse.json({ success: true });
+    }
+
     const client = await ensureDb();
 
     if (body.action === 'reset_scores') {

@@ -106,12 +106,22 @@ Görselleri commit edip yeniden seed + deploy edin (`npm run seed` üretimde Tur
 
 ## Admin Paneli
 
-`/admin` — şifreler ortam değişkeni ile ayarlanır (varsayılan `admin123` üretimde kullanılmamalı):
+`/admin` — giriş ve skor sıfırlama **`ADMIN_PASSWORD`** ile sunucuda doğrulanır (Vercel Environment Variables). Tanımlı değilse geliştirmede varsayılan `admin123` kullanılır; **üretimde mutlaka güçlü bir şifre verin.**
 
-- `ADMIN_PASSWORD` — sunucu API doğrulaması
-- `NEXT_PUBLIC_ADMIN_PASSWORD` — tarayıcıdaki admin formu (public)
+- `ADMIN_PASSWORD` — `/api/admin` POST (`authenticate`, `reset_scores`)
+- `NEXT_PUBLIC_ADMIN_PASSWORD` — isteğe bağlı; panel artık doğrudan **`ADMIN_PASSWORD`** ile girer (ikisini aynı tutabilirsiniz).
 
 `.env.example` dosyasına bakın.
+
+**Canlı ortamda liderlik sıfırlama:** `https://alan-adınız.vercel.app/admin` → şifreyi gir → **«Tüm Skorları Sıfırla»** (Turso `scores` tablosunu boşaltır).
+
+**İsteğe bağlı (curl):**
+
+```bash
+curl -sS -X POST "https://ALAN.vercel.app/api/admin" \
+  -H "Content-Type: application/json" \
+  -d '{"action":"reset_scores","password":"ADMIN_PASSWORD_DEGERI"}'
+```
 
 ## Kiosk Modu
 
