@@ -44,7 +44,23 @@ export default function AdminPage() {
         error?: string;
       };
       if (!res.ok || !data.success) {
-        showMessage(data.error || 'Yanlış şifre veya sunucu hatası.', 'error');
+        if (
+          res.status === 400 &&
+          String(data.error || '') === 'Bilinmeyen işlem'
+        ) {
+          showMessage(
+            'Sunucudaki admin sürümü güncel değil. Vercel’de son deploy’un tamamlandığını doğrulayın.',
+            'error'
+          );
+          return;
+        }
+        showMessage(
+          data.error ||
+            (res.status === 401
+              ? 'Şifre yanlış. Vercel’de ADMIN_PASSWORD değişkenine bakın (tanımlı değilse varsayılan: admin123).'
+              : 'Giriş başarısız.'),
+          'error'
+        );
         return;
       }
       setAuthenticated(true);

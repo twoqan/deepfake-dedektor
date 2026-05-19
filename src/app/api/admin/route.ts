@@ -3,7 +3,13 @@ import { ensureDb } from '@/db';
 
 export const dynamic = 'force-dynamic';
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+/** Vercel’de yanlışlıkla `' admin123 '` gibi yazılsa bile kabul etmek için trim. Ortam tanımlı boş ise kod varsayılanı kullanılır. */
+function getExpectedAdminPassword(): string {
+  const raw = process.env.ADMIN_PASSWORD;
+  if (raw === undefined || raw === null) return 'admin123';
+  const trimmed = String(raw).trim();
+  return trimmed !== '' ? trimmed : 'admin123';
+}
 
 export async function GET() {
   try {
@@ -58,7 +64,10 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    if (body.password !== ADMIN_PASSWORD) {
+    const trimmedInput =
+      typeof body.password === 'string' ? body.password.trim() : '';
+    const expected = getExpectedAdminPassword();
+    if (trimmedInput !== expected) {
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 401 });
     }
 
