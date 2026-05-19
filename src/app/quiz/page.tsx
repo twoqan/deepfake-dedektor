@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QuizQuestion, QuizAnswer } from '@/types';
-import ImagePair from '@/components/ImagePair';
+import QuizImage from '@/components/QuizImage';
 import ProgressBar from '@/components/ProgressBar';
 import FeedbackOverlay from '@/components/FeedbackOverlay';
 import Timer from '@/components/Timer';
@@ -45,15 +45,15 @@ export default function QuizPage() {
       .catch(() => setLoading(false));
   }, [router]);
 
-  const handleSelect = (side: 'left' | 'right') => {
+  const handleAnswer = (userSaidReal: boolean) => {
     if (showFeedback || saving) return;
 
     const question = questions[currentIndex];
-    const isCorrect = side === question.realSide;
+    const isCorrect = userSaidReal === question.isReal;
 
     const newAnswer: QuizAnswer = {
       questionId: question.id,
-      selectedSide: side,
+      userSaidReal,
       isCorrect,
     };
 
@@ -145,13 +145,13 @@ export default function QuizPage() {
         <div className="text-lg text-gray-400">
           <span className="text-white font-bold">{playerName}</span>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 flex-wrap justify-end">
           <div className="text-lg text-gray-400">
             Soru{' '}
             <span className="text-white font-bold">{currentIndex + 1}</span>/
             {questions.length}
           </div>
-          <Timer startTime={quizStartTime} paused={saving} />
+          <Timer startTime={quizStartTime} paused={showFeedback || saving} />
           <div className="px-4 py-2 bg-gray-900/80 rounded-xl border border-gray-800">
             <span className="text-gray-400">Skor: </span>
             <span className="text-cyan-400 font-bold text-xl">{score}</span>
@@ -166,9 +166,10 @@ export default function QuizPage() {
           key={`title-${currentIndex}`}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-bold mb-8 text-gray-200"
+          className="text-3xl font-bold mb-8 text-gray-200 text-center px-2"
         >
-          Hangisi <span className="text-cyan-400">gerçek</span> fotoğraf?
+          Bu görsel <span className="text-cyan-400">gerçek fotoğraf mı,</span>{' '}
+          <span className="text-fuchsia-300">yapay zeka mı?</span>
         </motion.h2>
 
         <AnimatePresence mode="wait">
@@ -180,12 +181,13 @@ export default function QuizPage() {
             transition={{ duration: 0.3 }}
             className="w-full"
           >
-            <ImagePair
-              leftImage={currentQuestion.leftImage}
-              rightImage={currentQuestion.rightImage}
-              onSelect={handleSelect}
+            <QuizImage
+              imageSrc={currentQuestion.image}
+              onAnswer={handleAnswer}
               disabled={showFeedback || saving}
-              correctSide={showFeedback ? currentQuestion.realSide : undefined}
+              showFeedback={showFeedback}
+              wasCorrect={lastCorrect}
+              isReal={currentQuestion.isReal}
             />
           </motion.div>
         </AnimatePresence>
@@ -194,9 +196,9 @@ export default function QuizPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-8 text-gray-500 text-lg"
+          className="mt-8 text-gray-500 text-lg text-center px-4"
         >
-          Gerçek olduğunu düşündüğünüz görsele tıklayın
+          Görseli inceleyin ve seçiminizi yapın.
         </motion.p>
       </div>
 

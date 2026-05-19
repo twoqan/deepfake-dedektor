@@ -62,7 +62,7 @@ Görselleri değiştirdikten sonra, veritabanındaki yolları güncellemek için
 | Sayfa | Yol | Açıklama |
 |-------|-----|----------|
 | Ana Sayfa | `/` | Karşılama ekranı, isim girişi |
-| Quiz | `/quiz` | Görsel testi |
+| Quiz | `/quiz` | Her soruda tek görsel: gerçek mi yapay zeka mı? |
 | Sonuç | `/result` | Test sonucu ve puan |
 | Liderlik | `/leaderboard` | Skor + süre sıralaması (eşit puanda hızlı olan üstte) |
 | Admin | `/admin` | Yönetim paneli |

@@ -45,9 +45,9 @@ export default function HomePage() {
         </h1>
 
         <p className="text-xl text-gray-400 mb-12 leading-relaxed">
-          Gerçek ve yapay zeka ile üretilmiş görselleri
+          Tek bir görsel: gerçek fotoğraf mı, yapay zeka ile üretilmiş mi?
           <br />
-          ayırt edebilir misiniz? Kendinizi test edin!
+          Ayırt edebilir misiniz? Kendinizi test edin!
         </p>
 
         <motion.div

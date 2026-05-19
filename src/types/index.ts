@@ -10,14 +10,13 @@ export interface ImagePairData {
 export interface QuizQuestion {
   id: number;
   name: string;
-  leftImage: string;
-  rightImage: string;
-  realSide: 'left' | 'right';
+  image: string;
+  isReal: boolean;
 }
 
 export interface QuizAnswer {
   questionId: number;
-  selectedSide: 'left' | 'right';
+  userSaidReal: boolean;
   isCorrect: boolean;
 }
 

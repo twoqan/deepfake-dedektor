@@ -17,13 +17,12 @@ export function generateQuestions(
   const selected = shuffled.slice(0, Math.min(count, shuffled.length));
 
   return selected.map((img) => {
-    const realOnLeft = Math.random() > 0.5;
+    const showReal = Math.random() > 0.5;
     return {
       id: img.id,
       name: img.name,
-      leftImage: realOnLeft ? img.real_image : img.fake_image,
-      rightImage: realOnLeft ? img.fake_image : img.real_image,
-      realSide: realOnLeft ? ('left' as const) : ('right' as const),
+      image: showReal ? img.real_image : img.fake_image,
+      isReal: showReal,
     };
   });
 }
