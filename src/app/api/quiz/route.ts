@@ -1,21 +1,21 @@
 import { NextResponse } from 'next/server';
 import { ensureDb } from '@/db';
 import { rowToImagePair } from '@/db/mappers';
+import { resolveImagePairUrls } from '@/lib/resolve-public-image-url';
 import { generateQuestions } from '@/lib/quiz-engine';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const count = parseInt(searchParams.get('count') || '10');
-
     const client = await ensureDb();
     const result = await client.execute(
       'SELECT * FROM images WHERE is_active = 1'
     );
 
-    const images = result.rows.map(rowToImagePair);
+    const images = result.rows.map((row) =>
+      resolveImagePairUrls(rowToImagePair(row))
+    );
 
     if (images.length === 0) {
       return NextResponse.json(
@@ -24,8 +24,12 @@ export async function GET(request: Request) {
       );
     }
 
-    const questions = generateQuestions(images, count);
-    return NextResponse.json({ questions });
+    const gen = generateQuestions(images);
+    if (!gen.ok) {
+      return NextResponse.json({ error: gen.message }, { status: 422 });
+    }
+
+    return NextResponse.json({ questions: gen.questions });
   } catch (error) {
     console.error('Quiz API error:', error);
     return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 });

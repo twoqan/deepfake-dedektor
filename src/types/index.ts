@@ -1,8 +1,11 @@
+export type ImageKind = 'ai' | 'real';
+
 export interface ImagePairData {
   id: number;
   name: string;
   real_image: string;
   fake_image: string;
+  image_kind: ImageKind;
   is_active: number;
   created_at: string;
 }

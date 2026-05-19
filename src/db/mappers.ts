@@ -1,5 +1,14 @@
 import type { Row } from '@libsql/core/api';
-import type { ImagePairData, ScoreEntry } from '@/types';
+import type { ImageKind, ImagePairData, ScoreEntry } from '@/types';
+
+function rowImageKind(row: Row): ImageKind {
+  const raw = row.image_kind;
+  if (raw === null || raw === undefined || String(raw).trim() === '') {
+    return 'ai';
+  }
+  const s = String(raw).trim();
+  return s === 'real' ? 'real' : 'ai';
+}
 
 export function rowToImagePair(row: Row): ImagePairData {
   return {
@@ -7,6 +16,7 @@ export function rowToImagePair(row: Row): ImagePairData {
     name: String(row.name),
     real_image: String(row.real_image),
     fake_image: String(row.fake_image),
+    image_kind: rowImageKind(row),
     is_active: Number(row.is_active),
     created_at: String(row.created_at),
   };

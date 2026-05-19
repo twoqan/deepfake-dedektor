@@ -1,0 +1,23 @@
+[
+  { "folder": "pair-01", "name": "Yemek — Patates" },
+  { "folder": "pair-02", "name": "Gündelik — Kablo" },
+  { "folder": "pair-03", "name": "İçecek — Çay" },
+  { "folder": "pair-04", "name": "İç mekân — Bekleme alanı" },
+  { "folder": "pair-05", "name": "Gece — Dökülmüş bardak" },
+  { "folder": "pair-06", "name": "Yemek — Mandalin" },
+  { "folder": "pair-07", "name": "Portre — Dış mekân" },
+  { "folder": "pair-08", "name": "Ayakkabı — Çamurlu bot" },
+  { "folder": "pair-09", "name": "Yapay görsel — Çift 09" },
+  { "folder": "pair-10", "name": "Yapay görsel — Çift 10" },
+  { "folder": "11-yeni-fake-foto", "name": "Yeni yapay görseller (havuz)" },
+  {
+    "folder": "yapay-ofis-may2026",
+    "name": "Yapay — Ofis detayları (May 2026)",
+    "kind": "ai"
+  },
+  {
+    "folder": "gercek-fotolar",
+    "name": "Gerçek fotoğraflar",
+    "kind": "real"
+  }
+]

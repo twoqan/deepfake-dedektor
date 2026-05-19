@@ -1,0 +1,11 @@
+[
+  {
+    "folder": "demo-01",
+    "name": "Örnek: etkinlikte kullanılacak kısa açıklama"
+  },
+  {
+    "folder": "gercek-fotolar",
+    "name": "Gerçek fotoğraflar (manifest'te kind: real ile quiz havuzunda gerçek olarak sayılır)",
+    "kind": "real"
+  }
+]

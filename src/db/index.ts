@@ -37,7 +37,8 @@ async function initSchema(client: Client): Promise<void> {
       real_image TEXT NOT NULL,
       fake_image TEXT NOT NULL,
       is_active INTEGER NOT NULL DEFAULT 1,
-      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      image_kind TEXT NOT NULL DEFAULT 'ai'
     )
   `);
 
@@ -61,6 +62,19 @@ async function initSchema(client: Client): Promise<void> {
     info.rows.some((row) => row[nameCol] === 'duration_ms');
   if (!hasDuration) {
     await client.execute('ALTER TABLE scores ADD COLUMN duration_ms INTEGER');
+  }
+
+  const imgInfo = await client.execute('PRAGMA table_info(images)');
+  const imgNameColIdx = imgInfo.columns.indexOf('name');
+  const hasImageKind =
+    imgNameColIdx >= 0 &&
+    imgInfo.rows.some(
+      (row) => String(row[imgNameColIdx]) === 'image_kind'
+    );
+  if (!hasImageKind) {
+    await client.execute(
+      "ALTER TABLE images ADD COLUMN image_kind TEXT NOT NULL DEFAULT 'ai'"
+    );
   }
 }
 

@@ -5,8 +5,6 @@ import { motion } from 'framer-motion';
 
 interface QuizImageProps {
   imageSrc: string;
-  onAnswer: (userSaidReal: boolean) => void;
-  disabled?: boolean;
   showFeedback?: boolean;
   wasCorrect?: boolean;
   isReal: boolean;
@@ -14,8 +12,6 @@ interface QuizImageProps {
 
 export default function QuizImage({
   imageSrc,
-  onAnswer,
-  disabled = false,
   showFeedback = false,
   wasCorrect = false,
   isReal,
@@ -27,9 +23,9 @@ export default function QuizImage({
     : 'Bu görsel yapay zeka ile üretilmişti.';
 
   return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col gap-8">
+    <div className="w-full max-w-5xl mx-auto">
       <div
-        className={`relative rounded-2xl overflow-hidden border-4 transition-colors duration-300 aspect-[4/3] bg-gray-900/80 ${
+        className={`relative rounded-2xl overflow-hidden border-4 transition-colors duration-300 aspect-[4/3] bg-neutral-950 flex items-center justify-center p-1 sm:p-2 ${
           showFeedback
             ? wasCorrect
               ? 'border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.25)]'
@@ -45,7 +41,9 @@ export default function QuizImage({
           <img
             src={imageSrc}
             alt="Quiz görseli"
-            className="w-full h-full object-cover select-none"
+            decoding="async"
+            fetchPriority="high"
+            className="max-h-full max-w-full h-auto w-auto object-contain object-center select-none"
             draggable={false}
             onError={() => setHasError(true)}
           />
@@ -55,7 +53,7 @@ export default function QuizImage({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={`absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center backdrop-blur-[2px] ${
+            className={`absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 px-6 text-center backdrop-blur-[2px] ${
               wasCorrect ? 'bg-green-500/20' : 'bg-red-500/20'
             }`}
           >
@@ -107,29 +105,6 @@ export default function QuizImage({
             </motion.p>
           </motion.div>
         )}
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-        <motion.button
-          type="button"
-          whileHover={!disabled ? { scale: 1.02 } : {}}
-          whileTap={!disabled ? { scale: 0.98 } : {}}
-          onClick={() => !disabled && onAnswer(true)}
-          disabled={disabled}
-          className="py-5 px-8 rounded-2xl text-xl font-bold border-4 border-green-700/80 bg-green-950/60 text-green-100 hover:bg-green-900/70 hover:border-green-500 disabled:opacity-35 disabled:pointer-events-none transition-colors"
-        >
-          Gerçek fotoğraf
-        </motion.button>
-        <motion.button
-          type="button"
-          whileHover={!disabled ? { scale: 1.02 } : {}}
-          whileTap={!disabled ? { scale: 0.98 } : {}}
-          onClick={() => !disabled && onAnswer(false)}
-          disabled={disabled}
-          className="py-5 px-8 rounded-2xl text-xl font-bold border-4 border-fuchsia-800/70 bg-fuchsia-950/50 text-fuchsia-100 hover:bg-fuchsia-900/65 hover:border-fuchsia-400 disabled:opacity-35 disabled:pointer-events-none transition-colors"
-        >
-          Yapay zeka
-        </motion.button>
       </div>
     </div>
   );

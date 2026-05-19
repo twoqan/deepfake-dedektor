@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ensureDb } from '@/db';
 import { rowToImagePair } from '@/db/mappers';
+import { resolveImagePairUrls } from '@/lib/resolve-public-image-url';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,7 +9,9 @@ export async function GET() {
   try {
     const client = await ensureDb();
     const result = await client.execute('SELECT * FROM images ORDER BY id');
-    const images = result.rows.map(rowToImagePair);
+    const images = result.rows.map((row) =>
+      resolveImagePairUrls(rowToImagePair(row))
+    );
     return NextResponse.json(images);
   } catch (error) {
     console.error('Images GET error:', error);

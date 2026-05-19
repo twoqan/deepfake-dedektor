@@ -22,6 +22,7 @@ export default function QuizPage() {
   const [saving, setSaving] = useState(false);
   const [quizStartTime, setQuizStartTime] = useState<number | null>(null);
   const quizStartRef = useRef<number | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     const name = sessionStorage.getItem('playerName');
@@ -32,17 +33,28 @@ export default function QuizPage() {
     setPlayerName(name);
 
     fetch('/api/quiz')
-      .then((res) => res.json())
-      .then((data) => {
+      .then(async (res) => {
+        const data: { questions?: QuizQuestion[]; error?: string } =
+          await res.json();
+        if (!res.ok) {
+          setFetchError(
+            typeof data.error === 'string'
+              ? data.error
+              : 'Quiz yüklenemedi.'
+          );
+          return;
+        }
         if (data.questions && data.questions.length > 0) {
           setQuestions(data.questions);
           const start = Date.now();
           quizStartRef.current = start;
           setQuizStartTime(start);
         }
-        setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() =>
+        setFetchError('Quiz yüklenemedi. Bağlantıyı kontrol edin.')
+      )
+      .finally(() => setLoading(false));
   }, [router]);
 
   const handleAnswer = (userSaidReal: boolean) => {
@@ -124,7 +136,7 @@ export default function QuizPage() {
       <main className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <p className="text-2xl text-gray-400 mb-6">
-            Henüz görsel eklenmemiş.
+            {fetchError ?? 'Henüz görsel eklenmemiş.'}
           </p>
           <button
             onClick={() => router.push('/')}
@@ -166,11 +178,35 @@ export default function QuizPage() {
           key={`title-${currentIndex}`}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-bold mb-8 text-gray-200 text-center px-2"
+          className="text-3xl font-bold mb-4 sm:mb-5 text-gray-200 text-center px-2"
         >
           Bu görsel <span className="text-cyan-400">gerçek fotoğraf mı,</span>{' '}
           <span className="text-fuchsia-300">yapay zeka mı?</span>
         </motion.h2>
+
+        {/* Butonlar başlığın hemen altında, görselin üstünde — kiosk dokunma */}
+        <div className="w-full max-w-5xl mx-auto grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-5 px-1">
+          <motion.button
+            type="button"
+            whileHover={!(showFeedback || saving) ? { scale: 1.02 } : {}}
+            whileTap={!(showFeedback || saving) ? { scale: 0.98 } : {}}
+            onClick={() => handleAnswer(true)}
+            disabled={showFeedback || saving}
+            className="py-4 sm:py-5 px-2 sm:px-6 rounded-2xl text-base sm:text-xl font-bold border-[3px] sm:border-4 border-green-600/90 bg-green-950/80 text-green-100 hover:bg-green-900/85 hover:border-green-400 disabled:opacity-35 disabled:pointer-events-none transition-colors shadow-lg min-h-[3.25rem] sm:min-h-[3.5rem]"
+          >
+            Gerçek fotoğraf
+          </motion.button>
+          <motion.button
+            type="button"
+            whileHover={!(showFeedback || saving) ? { scale: 1.02 } : {}}
+            whileTap={!(showFeedback || saving) ? { scale: 0.98 } : {}}
+            onClick={() => handleAnswer(false)}
+            disabled={showFeedback || saving}
+            className="py-4 sm:py-5 px-2 sm:px-6 rounded-2xl text-base sm:text-xl font-bold border-[3px] sm:border-4 border-fuchsia-700/85 bg-fuchsia-950/75 text-fuchsia-100 hover:bg-fuchsia-900/80 hover:border-fuchsia-400 disabled:opacity-35 disabled:pointer-events-none transition-colors shadow-lg min-h-[3.25rem] sm:min-h-[3.5rem]"
+          >
+            Yapay zeka
+          </motion.button>
+        </div>
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -183,8 +219,6 @@ export default function QuizPage() {
           >
             <QuizImage
               imageSrc={currentQuestion.image}
-              onAnswer={handleAnswer}
-              disabled={showFeedback || saving}
               showFeedback={showFeedback}
               wasCorrect={lastCorrect}
               isReal={currentQuestion.isReal}
@@ -196,7 +230,7 @@ export default function QuizPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-8 text-gray-500 text-lg text-center px-4"
+          className="mt-6 text-gray-500 text-lg text-center px-4"
         >
           Görseli inceleyin ve seçiminizi yapın.
         </motion.p>
