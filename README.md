@@ -106,10 +106,10 @@ Görselleri commit edip yeniden seed + deploy edin (`npm run seed` üretimde Tur
 
 ## Admin Paneli
 
-`/admin` — giriş ve skor sıfırlama **`ADMIN_PASSWORD`** ile sunucuda doğrulanır (Vercel Environment Variables). Tanımlı değilse geliştirmede varsayılan `admin123` kullanılır; **üretimde mutlaka güçlü bir şifre verin.**
+`/admin` — Giriş ve skor sıfırlama: Vercel’de dolu **`ADMIN_PASSWORD`** ile dolu **`NEXT_PUBLIC_ADMIN_PASSWORD`** birlikte kabul kümesidir (**ikisinden biri doğru ise giriş**). İkisi de boşsa yalnızca **`admin123`**.
 
-- `ADMIN_PASSWORD` — `/api/admin` POST (`authenticate`, `reset_scores`)
-- `NEXT_PUBLIC_ADMIN_PASSWORD` — isteğe bağlı; panel artık doğrudan **`ADMIN_PASSWORD`** ile girer (ikisini aynı tutabilirsiniz).
+- `ADMIN_PASSWORD` — Güvenlik için kullanın; yanlış girildiyse `NEXT_PUBLIC_...` hâlâ girişe izin verir.
+- `NEXT_PUBLIC_ADMIN_PASSWORD` — Müşteri tarayıcısı bundle’ına gider; kiosk kolaylığı; mümkünse ikisinde aynı güçlü şifreyi tutun veya sonra kaldırın.
 
 `.env.example` dosyasına bakın.
 

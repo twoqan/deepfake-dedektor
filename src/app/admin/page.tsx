@@ -57,7 +57,7 @@ export default function AdminPage() {
         showMessage(
           data.error ||
             (res.status === 401
-              ? 'Şifre yanlış. Vercel’de ADMIN_PASSWORD değişkenine bakın (tanımlı değilse varsayılan: admin123).'
+              ? 'Şifre yanlış. Vercel’de ADMIN_PASSWORD veya NEXT_PUBLIC_ADMIN_PASSWORD’a bakın; ikisi de boşsa varsayılan: admin123.'
               : 'Giriş başarısız.'),
           'error'
         );

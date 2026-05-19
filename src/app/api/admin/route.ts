@@ -3,12 +3,25 @@ import { ensureDb } from '@/db';
 
 export const dynamic = 'force-dynamic';
 
-/** Vercel’de yanlışlıkla `' admin123 '` gibi yazılsa bile kabul etmek için trim. Ortam tanımlı boş ise kod varsayılanı kullanılır. */
-function getExpectedAdminPassword(): string {
-  const raw = process.env.ADMIN_PASSWORD;
-  if (raw === undefined || raw === null) return 'admin123';
-  const trimmed = String(raw).trim();
-  return trimmed !== '' ? trimmed : 'admin123';
+/** Varsayılan Node runtime; bazı ortamlarda ortam değişkenlerinin garanti görünmesi için. */
+export const runtime = 'nodejs';
+
+/** Hangi dizeler ile girilebildiği; boş olmayan `ADMIN_PASSWORD` ve `NEXT_PUBLIC_ADMIN_PASSWORD` kabulü (uniq). İkisi de tanımlı boş ise yalnızca `admin123`. */
+function getAcceptedAdminPasswords(): Set<string> {
+  const set = new Set<string>();
+  for (const key of ['ADMIN_PASSWORD', 'NEXT_PUBLIC_ADMIN_PASSWORD'] as const) {
+    const raw = process.env[key];
+    if (typeof raw === 'string') {
+      const t = raw.trim();
+      if (t !== '') set.add(t);
+    }
+  }
+  if (set.size === 0) set.add('admin123');
+  return set;
+}
+
+function isPasswordOk(inputTrimmed: string): boolean {
+  return getAcceptedAdminPasswords().has(inputTrimmed);
 }
 
 export async function GET() {
@@ -66,12 +79,11 @@ export async function POST(request: Request) {
 
     const trimmedInput =
       typeof body.password === 'string' ? body.password.trim() : '';
-    const expected = getExpectedAdminPassword();
-    if (trimmedInput !== expected) {
+    if (!isPasswordOk(trimmedInput)) {
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 401 });
     }
 
-    /** Sadece panel girişi; şifreyi sunucu (`ADMIN_PASSWORD`) ile doğrular. */
+    /** Giriş / reset: ADMIN_PASSWORD veya NEXT_PUBLIC_ADMIN_PASSWORD’teki dolu değerlerden biri. */
     if (body.action === 'authenticate') {
       return NextResponse.json({ success: true });
     }
