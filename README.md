@@ -104,6 +104,30 @@ Görselleri commit edip yeniden seed + deploy edin (`npm run seed` üretimde Tur
 | Liderlik | `/leaderboard` | Skor + süre sıralaması (eşit puanda hızlı olan üstte) |
 | Admin | `/admin` | Yönetim paneli |
 
+## Liderlik ilk 100 — Excel / CSV’ye aktarma
+
+Liderlik listesi `/api/scores` ile UI ile aynı kaynaktan gelir (her oyuncunun **ilk** katılımı, en fazla 100 satır).
+
+### Yöntem A: JSON (`/api/scores`)
+
+Üretimde tarayıcı veya araç ile `GET /api/scores` çıktısını alın; **`scores`** dizisinde `player_name`, `score`, `total_questions`, `duration_ms`, `created_at` alanları vardır. Excel 365 ile **Veri > JSON'dan** içeri aktarabilir veya JSON→CSV araçlarıyla CSV üretip Excel’de açabilirsiniz.
+
+### Yöntem B: Turso SQL (tam DB uyumu)
+
+Turso konsolunda veya CLI’da ilk katılımlar + sıralamanın tamamı için `src/lib/score-leaderboard-sql.ts` içindeki `SCORE_LEADERBOARD_SQL` metnini kullanın (`LIMIT 100`). Sonucu araç CSV olarak dışa aktarın veya yapıştırın; Türkçe karakter için **UTF-8** seçin.
+
+### Yöntem C: Admin CSV indir (`/api/admin/export-leaderboard-csv`)
+
+`/admin` panelinde şifreyle giriş yaptıktan sonra **«Liderlik CSV indir»** ile ilk 100 satırı doğrudan indirebilirsiniz (`text/csv; charset=utf-8`, UTF-8 BOM; dosya adı `leaderboard-ilk100-YYYY-MM-DD.csv`).
+
+**Şifre:** `ADMIN_PASSWORD` / `NEXT_PUBLIC_ADMIN_PASSWORD` kabul kümesinden biri. İstekte `X-Admin-Password` veya `Authorization: Bearer …`:
+
+```bash
+curl -fsS -o leaderboard.csv \
+  -H "X-Admin-Password: ADMIN_PASSWORD_DEGERI" \
+  "https://ALAN.vercel.app/api/admin/export-leaderboard-csv"
+```
+
 ## Admin Paneli
 
 `/admin` — Giriş ve skor sıfırlama: Vercel’de dolu **`ADMIN_PASSWORD`** ile dolu **`NEXT_PUBLIC_ADMIN_PASSWORD`** birlikte kabul kümesidir (**ikisinden biri doğru ise giriş**). İkisi de boşsa yalnızca **`admin123`**.

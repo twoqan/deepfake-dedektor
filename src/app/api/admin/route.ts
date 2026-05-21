@@ -1,28 +1,11 @@
 import { NextResponse } from 'next/server';
 import { ensureDb } from '@/db';
+import { isAdminPasswordOk } from '@/lib/admin-password';
 
 export const dynamic = 'force-dynamic';
 
 /** Varsayılan Node runtime; bazı ortamlarda ortam değişkenlerinin garanti görünmesi için. */
 export const runtime = 'nodejs';
-
-/** Hangi dizeler ile girilebildiği; boş olmayan `ADMIN_PASSWORD` ve `NEXT_PUBLIC_ADMIN_PASSWORD` kabulü (uniq). İkisi de tanımlı boş ise yalnızca `admin123`. */
-function getAcceptedAdminPasswords(): Set<string> {
-  const set = new Set<string>();
-  for (const key of ['ADMIN_PASSWORD', 'NEXT_PUBLIC_ADMIN_PASSWORD'] as const) {
-    const raw = process.env[key];
-    if (typeof raw === 'string') {
-      const t = raw.trim();
-      if (t !== '') set.add(t);
-    }
-  }
-  if (set.size === 0) set.add('admin123');
-  return set;
-}
-
-function isPasswordOk(inputTrimmed: string): boolean {
-  return getAcceptedAdminPasswords().has(inputTrimmed);
-}
 
 export async function GET() {
   try {
@@ -79,7 +62,7 @@ export async function POST(request: Request) {
 
     const trimmedInput =
       typeof body.password === 'string' ? body.password.trim() : '';
-    if (!isPasswordOk(trimmedInput)) {
+    if (!isAdminPasswordOk(trimmedInput)) {
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 401 });
     }
 

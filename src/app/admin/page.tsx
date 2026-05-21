@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface AdminStats {
@@ -80,6 +80,40 @@ export default function AdminPage() {
       setImages(await imagesRes.json());
     } catch {
       showMessage('Veri yüklenemedi', 'error');
+    }
+  };
+
+  const handleExportLeaderboardCsv = async () => {
+    try {
+      const res = await fetch('/api/admin/export-leaderboard-csv', {
+        headers: { 'X-Admin-Password': password },
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        showMessage(
+          data.error ||
+            (res.status === 401
+              ? 'CSV indirilemedi: şifre yanlış veya eksik başlık.'
+              : 'CSV indirilemedi.'),
+          'error'
+        );
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const dispo = res.headers.get('Content-Disposition');
+      const quoted = dispo?.match(/filename="([^"]+)"/);
+      const day = new Date().toISOString().slice(0, 10);
+      a.download = quoted?.[1] ?? `leaderboard-ilk100-${day}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showMessage('Liderlik CSV indirildi.');
+    } catch {
+      showMessage('CSV indirilemedi (ağ veya sunucu).', 'error');
     }
   };
 
@@ -168,14 +202,27 @@ export default function AdminPage() {
   return (
     <main className="min-h-screen p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-8">
           <h1 className="text-3xl font-bold">Admin Paneli</h1>
-          <button
-            onClick={() => router.push('/')}
-            className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-xl text-gray-300 hover:bg-gray-700 transition text-sm"
-          >
-            &larr; Ana Sayfa
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => void handleExportLeaderboardCsv()}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl shadow-lg shadow-cyan-900/40 transition text-sm"
+            >
+              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Liderlik indir (Excel / CSV)
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push('/')}
+              className="px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-gray-300 hover:bg-gray-700 transition text-sm font-medium"
+            >
+              &larr; Ana Sayfa
+            </button>
+          </div>
         </div>
 
         {message && (
@@ -212,6 +259,14 @@ export default function AdminPage() {
             </div>
           </div>
         )}
+
+        <div className="mb-8 rounded-2xl border border-cyan-500/25 bg-cyan-500/5 px-4 py-3 flex flex-wrap items-center gap-3">
+          <p className="text-sm text-gray-400 flex-1 min-w-[220px]">
+            <strong className="text-cyan-200/90">Liderlik (ilk 100):</strong> Sağ üstteki{' '}
+            <strong className="text-gray-300">«Liderlik indir»</strong> butonunu kullanın.
+            Dosya CSV’dir; Excel’de doğrudan açabilirsiniz (UTF‑8 BOM). İstek, girişte kullandığınız şifreyle doğrulanır.
+          </p>
+        </div>
 
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-8">
           <h2 className="text-xl font-bold mb-4">Görsel Çiftleri</h2>

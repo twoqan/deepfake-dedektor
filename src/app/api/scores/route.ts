@@ -1,53 +1,14 @@
 import { NextResponse } from 'next/server';
 import { ensureDb } from '@/db';
 import { rowToScoreEntry } from '@/db/mappers';
+import {
+  AVG_FIRST_ATTEMPT_SQL,
+  COUNT_DISTINCT_PLAYERS_SQL,
+  SCORE_LEADERBOARD_SQL,
+} from '@/lib/score-leaderboard-sql';
 import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
-
-/** Her isim (trim + lower) için en erken tarihli ilk katılım; liderlik buna göre. */
-const SCORE_LEADERBOARD_SQL = `
-WITH first_attempts AS (
-  SELECT
-    id,
-    player_name,
-    score,
-    total_questions,
-    duration_ms,
-    created_at,
-    session_id,
-    ROW_NUMBER() OVER (
-      PARTITION BY LOWER(TRIM(player_name))
-      ORDER BY created_at ASC
-    ) AS rn
-  FROM scores
-)
-SELECT id, player_name, score, total_questions, duration_ms, created_at, session_id
-FROM first_attempts
-WHERE rn = 1
-ORDER BY score DESC,
-         COALESCE(duration_ms, 2147483647) ASC,
-         created_at ASC
-LIMIT 100
-`;
-
-/** Benzersiz isim sayısı (aynı yazım küçük harf normalize). */
-const COUNT_DISTINCT_PLAYERS_SQL = `
-SELECT COUNT(DISTINCT LOWER(TRIM(player_name))) AS count FROM scores
-`;
-
-/** Ortalama puan — yalnızca her ismin ilk katılımı üzerinden. */
-const AVG_FIRST_ATTEMPT_SQL = `
-WITH first_attempts AS (
-  SELECT score,
-         ROW_NUMBER() OVER (
-           PARTITION BY LOWER(TRIM(player_name))
-           ORDER BY created_at ASC
-         ) AS rn
-  FROM scores
-)
-SELECT AVG(score) AS avg FROM first_attempts WHERE rn = 1
-`;
 
 export async function GET() {
   try {
