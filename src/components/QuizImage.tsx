@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface QuizImageProps {
@@ -17,15 +17,42 @@ export default function QuizImage({
   isReal,
 }: QuizImageProps) {
   const [hasError, setHasError] = useState(false);
+  // Görselin gerçek oranı; yüklenene kadar 4/3.
+  const [ratio, setRatio] = useState(4 / 3);
+  // Kullanılabilir alan (px). Çerçeve = alana sığan en büyük, orana sadık kutu.
+  const areaRef = useRef<HTMLDivElement>(null);
+  const [area, setArea] = useState<{ w: number; h: number } | null>(null);
+
+  useEffect(() => {
+    const el = areaRef.current;
+    if (!el) return;
+    const update = () =>
+      setArea({ w: el.clientWidth, h: el.clientHeight });
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const frameStyle = area
+    ? (() => {
+        const w = Math.min(area.w, area.h * ratio);
+        return { width: Math.floor(w), height: Math.floor(w / ratio) };
+      })()
+    : { width: '100%', maxHeight: '100%', aspectRatio: ratio };
 
   const resultLabel = isReal
     ? 'Bu görsel gerçek bir fotoğraftı.'
     : 'Bu görsel yapay zeka ile üretilmişti.';
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div
+      ref={areaRef}
+      className="h-full w-full max-w-5xl mx-auto flex items-center justify-center"
+    >
       <div
-        className={`relative rounded-2xl overflow-hidden border-4 transition-colors duration-300 aspect-[4/3] bg-neutral-950 flex items-center justify-center p-1 sm:p-2 ${
+        style={frameStyle}
+        className={`relative rounded-2xl overflow-hidden border-4 transition-colors duration-300 bg-neutral-950 flex items-center justify-center p-1 sm:p-2 ${
           showFeedback
             ? wasCorrect
               ? 'border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.25)]'
@@ -45,6 +72,12 @@ export default function QuizImage({
             fetchPriority="high"
             className="max-h-full max-w-full h-auto w-auto object-contain object-center select-none"
             draggable={false}
+            onLoad={(e) => {
+              const { naturalWidth, naturalHeight } = e.currentTarget;
+              if (naturalWidth > 0 && naturalHeight > 0) {
+                setRatio(naturalWidth / naturalHeight);
+              }
+            }}
             onError={() => setHasError(true)}
           />
         )}

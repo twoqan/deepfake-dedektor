@@ -11,7 +11,7 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
   const percentage = (current / total) * 100;
 
   return (
-    <div className="w-full max-w-4xl mx-auto mb-8">
+    <div className="w-full max-w-4xl mx-auto mb-3 shrink-0">
       <div className="flex justify-between text-sm text-gray-500 mb-2">
         {Array.from({ length: total }, (_, i) => (
           <div

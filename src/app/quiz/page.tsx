@@ -151,8 +151,8 @@ export default function QuizPage() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <main className="min-h-screen flex flex-col p-6 lg:p-8">
-      <div className="flex justify-between items-center mb-4">
+    <main className="h-dvh overflow-hidden flex flex-col p-4 lg:p-6">
+      <div className="flex justify-between items-center mb-2 shrink-0">
         <div className="text-lg text-gray-400">
           <span className="text-white font-bold">{playerName}</span>
         </div>
@@ -172,19 +172,19 @@ export default function QuizPage() {
 
       <ProgressBar current={currentIndex + 1} total={questions.length} />
 
-      <div className="flex-1 flex flex-col items-center justify-center">
+      <div className="flex-1 min-h-0 flex flex-col items-center">
         <motion.h2
           key={`title-${currentIndex}`}
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl font-bold mb-4 sm:mb-5 text-gray-200 text-center px-2"
+          className="text-2xl lg:text-3xl font-bold mb-3 text-gray-200 text-center px-2 shrink-0"
         >
           Bu görsel <span className="text-cyan-400">gerçek fotoğraf mı,</span>{' '}
           <span className="text-fuchsia-300">yapay zeka mı?</span>
         </motion.h2>
 
         {/* Butonlar başlığın hemen altında, görselin üstünde — kiosk dokunma */}
-        <div className="w-full max-w-5xl mx-auto grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-5 px-1">
+        <div className="w-full max-w-5xl mx-auto grid grid-cols-2 gap-2 sm:gap-3 mb-3 px-1 shrink-0">
           <motion.button
             type="button"
             whileHover={!(showFeedback || saving) ? { scale: 1.02 } : {}}
@@ -214,7 +214,7 @@ export default function QuizPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="w-full"
+            className="w-full flex-1 min-h-0 flex justify-center"
           >
             <QuizImage
               imageSrc={currentQuestion.image}
@@ -229,7 +229,7 @@ export default function QuizPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-6 text-gray-500 text-lg text-center px-4"
+          className="mt-3 text-gray-500 text-base text-center px-4 shrink-0"
         >
           Görseli inceleyin ve seçiminizi yapın.
         </motion.p>
