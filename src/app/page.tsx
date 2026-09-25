@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import OnScreenKeyboard from '@/components/OnScreenKeyboard';
@@ -85,6 +86,22 @@ export default function HomePage() {
             className="text-center max-w-2xl w-full"
           >
             <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              className="mb-10 flex justify-center"
+            >
+              <Image
+                src="/logo-iletisim.png"
+                alt="Türkiye Cumhuriyeti Cumhurbaşkanlığı İletişim Başkanlığı"
+                width={1943}
+                height={432}
+                priority
+                className="w-[520px] max-w-[80vw] h-auto brightness-[1.35] drop-shadow-[0_0_24px_rgba(255,255,255,0.08)]"
+              />
+            </motion.div>
+
+            <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
@@ -135,6 +152,9 @@ export default function HomePage() {
               >
                 Liderlik Tablosunu Gör &rarr;
               </button>
+              <p className="mt-10 text-sm text-gray-500 tracking-wide">
+                Türkiye Cumhuriyeti Cumhurbaşkanlığı İletişim Başkanlığı tarafından hazırlanmıştır.
+              </p>
             </motion.div>
           </motion.div>
         ) : (
