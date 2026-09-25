@@ -114,7 +114,7 @@ Liderlik listesi `/api/scores` ile UI ile aynı kaynaktan gelir (her oyuncunun *
 
 ### Yöntem B: Turso SQL (tam DB uyumu)
 
-Turso konsolunda veya CLI’da ilk katılımlar + sıralamanın tamamı için `src/lib/score-leaderboard-sql.ts` içindeki `SCORE_LEADERBOARD_SQL` metnini kullanın (`LIMIT 100`). Sonucu araç CSV olarak dışa aktarın veya yapıştırın; Türkçe karakter için **UTF-8** seçin.
+Turso konsolunda veya CLI’da sıralamanın tamamı (her deneme ayrı satır) için `src/lib/score-leaderboard-sql.ts` içindeki `SCORE_LEADERBOARD_SQL` metnini kullanın (`LIMIT 100`). Sonucu araç CSV olarak dışa aktarın veya yapıştırın; Türkçe karakter için **UTF-8** seçin.
 
 ### Yöntem C: Admin CSV indir (`/api/admin/export-leaderboard-csv`)
 

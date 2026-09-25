@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { ensureDb } from '@/db';
 import { rowToScoreEntry } from '@/db/mappers';
 import {
-  AVG_FIRST_ATTEMPT_SQL,
-  COUNT_DISTINCT_PLAYERS_SQL,
+  AVG_SCORE_SQL,
+  COUNT_ENTRIES_SQL,
   SCORE_LEADERBOARD_SQL,
 } from '@/lib/score-leaderboard-sql';
 import crypto from 'crypto';
@@ -16,8 +16,8 @@ export async function GET() {
 
     const [scoresResult, countResult, avgResult] = await Promise.all([
       client.execute(SCORE_LEADERBOARD_SQL),
-      client.execute(COUNT_DISTINCT_PLAYERS_SQL),
-      client.execute(AVG_FIRST_ATTEMPT_SQL),
+      client.execute(COUNT_ENTRIES_SQL),
+      client.execute(AVG_SCORE_SQL),
     ]);
 
     const totalParticipants = Number(countResult.rows[0]?.count ?? 0);

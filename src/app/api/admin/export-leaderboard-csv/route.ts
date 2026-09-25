@@ -18,7 +18,7 @@ function csvEscape(value: unknown): string {
   return s;
 }
 
-/** Liderlikteki ilk 100 satırı (her isim için ilk katılım) UTF-8 BOM CSV indirir. */
+/** Liderlikteki ilk 100 satırı (her deneme ayrı satır) UTF-8 BOM CSV indirir. */
 export async function GET(request: Request) {
   try {
     const pw = extractAdminPasswordFromRequest(request);

@@ -79,7 +79,7 @@ export default function LeaderboardPage() {
                 <span className="text-white font-bold text-xl">
                   {data?.totalParticipants || 0}
                 </span>
-                <span className="ml-1">Katılımcı</span>
+                <span className="ml-1">Deneme</span>
               </div>
             </div>
             <div className="flex items-center gap-2">
