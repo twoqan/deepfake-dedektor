@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { QuizQuestion, QuizAnswer } from '@/types';
 import QuizImage from '@/components/QuizImage';
 import ProgressBar from '@/components/ProgressBar';
-import FeedbackOverlay from '@/components/FeedbackOverlay';
 import Timer from '@/components/Timer';
 
 export default function QuizPage() {
@@ -237,7 +236,6 @@ export default function QuizPage() {
       </div>
 
       <AnimatePresence>
-        {showFeedback && <FeedbackOverlay isCorrect={lastCorrect} />}
       </AnimatePresence>
     </main>
   );

@@ -61,13 +61,13 @@ export default function QuizImage({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-              className={`w-24 h-24 rounded-full flex items-center justify-center ${
+              className={`w-32 h-32 rounded-full shadow-2xl flex items-center justify-center ${
                 wasCorrect ? 'bg-green-500' : 'bg-red-500'
               }`}
             >
               {wasCorrect ? (
                 <svg
-                  className="w-14 h-14 text-white"
+                  className="w-20 h-20 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -81,7 +81,7 @@ export default function QuizImage({
                 </svg>
               ) : (
                 <svg
-                  className="w-14 h-14 text-white"
+                  className="w-20 h-20 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -99,6 +99,16 @@ export default function QuizImage({
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
+              className={`text-3xl font-extrabold drop-shadow-lg ${
+                wasCorrect ? 'text-green-300' : 'text-red-300'
+              }`}
+            >
+              {wasCorrect ? 'Doğru!' : 'Yanlış!'}
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
               className="text-lg sm:text-xl font-semibold text-white drop-shadow-lg max-w-md leading-snug"
             >
               {resultLabel}
