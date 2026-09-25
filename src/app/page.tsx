@@ -146,7 +146,7 @@ export default function HomePage() {
             transition={{ duration: 0.4 }}
             className="text-center w-full max-w-7xl"
           >
-            <h1 className="text-5xl font-extrabold text-white mb-3">Rumuzunu Yaz</h1>
+            <h1 className="text-5xl font-extrabold text-white mb-3">İsminizi Giriniz</h1>
             <p className="text-xl text-gray-400 mb-8">
               Sıralama tablosunda bu isimle görüneceksin. En az {NAME_MIN}, en fazla {NAME_MAX} karakter.
             </p>
